@@ -6,6 +6,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import PostListComponent from './components/PostListComponent';
+import PostCreateComponent from './components/PostCreateComponent';
 
 require('./bootstrap');
 
@@ -17,9 +18,14 @@ const router = new VueRouter({
     mode: 'history',
     routes: [
         {
-            path: '/home',
+            path: '/',
             name: 'post.list',
             component: PostListComponent
+        },
+        {
+            path: '/posts/create',
+            name: 'post.create',
+            component: PostCreateComponent
         }
     ]
 });

@@ -18,18 +18,7 @@
   export default {
     data: function () {
       return {
-        posts: [
-          {
-            id: 1,
-            subject: 'subject1',
-            body: 'body1'
-          },
-          {
-            id: 2,
-            subject: 'subject2',
-            body: 'body2'
-          }
-        ]
+        posts: []
       }
     },
     methods: {
@@ -37,12 +26,10 @@
         axios.get('/api/posts')
           .then((res) => {
             this.posts = res.data;
-            console.log('get posts.')
           });
       }
     },
     mounted() {
-      console.log('Component mounted.')
       this.getPosts();
     }
   }
