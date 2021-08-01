@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -36,5 +38,27 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        $user->api_token = str_random(60);
+        $user->save();
+        return redirect('/home');
+    }
+
+    public function logout(Request $request)
+    {
+        // api_tokenをnullにする
+        $user = $request->user();
+        $user->api_token = '';
+        $user->save();
+
+        $this->guard()->logout();
+
+        $request->session()->flush();
+        $request->session()->regenerate();
+
+        return redirect('/');
     }
 }

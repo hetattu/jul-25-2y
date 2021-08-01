@@ -3,10 +3,26 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import PostListComponent from './components/PostListComponent';
 
 require('./bootstrap');
 
 window.Vue = require('vue').default;
+
+Vue.use(VueRouter);
+
+const router = new VueRouter({
+    mode: 'history',
+    routes: [
+        {
+            path: '/home',
+            name: 'post.list',
+            component: PostListComponent
+        }
+    ]
+});
 
 /**
  * The following block of code may be used to automatically register your
@@ -29,4 +45,5 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 const app = new Vue({
     el: '#app',
+    router
 });

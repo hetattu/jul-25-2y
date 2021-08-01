@@ -6,7 +6,15 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function index() {}
+    public function index() {
+        return [
+            [
+                'id' => 1,
+                'subject' => 'api_subject1',
+                'body' => 'api_body1',
+            ]
+        ];
+    }
 
     public function store() {}
 
