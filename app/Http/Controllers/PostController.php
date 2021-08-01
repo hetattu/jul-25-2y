@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Post;
 
@@ -9,7 +10,8 @@ class PostController extends Controller
 {
     public function index()
     {
-        return Post::all();
+        $user_id = Auth::id();
+        return Post::where('user_id', $user_id)->get();
     }
 
     public function store(Request $request)
