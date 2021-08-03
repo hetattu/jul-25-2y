@@ -19,6 +19,10 @@ const router = new VueRouter({
     routes: [
         {
             path: '/',
+            component: PostListComponent
+        },
+        {
+            path: '/home',
             name: 'post.list',
             component: PostListComponent
         },
@@ -29,6 +33,19 @@ const router = new VueRouter({
         }
     ]
 });
+
+axios.interceptors.response.use(
+    response => response,
+    async error => {
+        switch (error.response?.status) {
+            case 401:
+                window.location.href = '/login';
+                break;
+            default:
+                break;
+        }
+    }
+);
 
 /**
  * The following block of code may be used to automatically register your
