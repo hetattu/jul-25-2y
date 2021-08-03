@@ -36,7 +36,7 @@ const router = new VueRouter({
             path: '/posts/:postId',
             name: 'post.show',
             component: PostShowComponent,
-            props: true
+            props: (route) => ({postId: Number(route.params.postId)})
         }
     ]
 });

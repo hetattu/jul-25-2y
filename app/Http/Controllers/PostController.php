@@ -29,7 +29,15 @@ class PostController extends Controller
         return Post::where('id', $id)->first();
     }
 
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+        $post = Post::where('id', $id)->first();
+        $post->fill($request->all())->save();
+        return json_encode($post);
+    }
 
-    public function destroy($id) {}
+    public function destroy($id)
+    {
+        Post::where('id', $id)->delete();
+    }
 }
