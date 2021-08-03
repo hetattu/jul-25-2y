@@ -7,6 +7,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import PostListComponent from './components/PostListComponent';
 import PostCreateComponent from './components/PostCreateComponent';
+import PostShowComponent from './components/PostShowComponent';
 
 require('./bootstrap');
 
@@ -30,6 +31,12 @@ const router = new VueRouter({
             path: '/posts/create',
             name: 'post.create',
             component: PostCreateComponent
+        },
+        {
+            path: '/posts/:postId',
+            name: 'post.show',
+            component: PostShowComponent,
+            props: true
         }
     ]
 });
