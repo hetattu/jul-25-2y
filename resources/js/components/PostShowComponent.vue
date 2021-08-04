@@ -33,7 +33,7 @@ export default {
   methods: {
     getPost() {
       axios.get('/api/posts/' + this.postId).then((res) => {
-        this.post = res.data;
+        this.post = res.data.post;
       });
     },
     deletePost() {

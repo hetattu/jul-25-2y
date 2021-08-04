@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\Comment;
 
-class PostController extends Controller
+class PostApiController extends Controller
 {
     public function index()
     {
@@ -26,7 +27,10 @@ class PostController extends Controller
 
     public function show($id)
     {
-        return Post::where('id', $id)->first();
+        return [
+            'post' => Post::where('id', $id)->first(),
+            'comments' => Comment::where('post_id', $id),
+        ];
     }
 
     public function update(Request $request, $id)

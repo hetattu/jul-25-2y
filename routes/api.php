@@ -20,6 +20,10 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::name('api.')->group(function () {
-        Route::apiResource('posts', 'App\Http\Controllers\PostController');
+        Route::apiResource('posts', 'App\Http\Controllers\PostApiController');
+
+        Route::apiResource('comments', 'App\Http\Controllers\CommentApiController')->only([
+            'store', 'update', 'destroy'
+        ]);
     });
 });
