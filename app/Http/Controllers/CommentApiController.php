@@ -9,7 +9,12 @@ class CommentApiController extends Controller
 {
     public function store(Request $request)
     {
-        Comment::create($request->all());
+        $store_data = Comment::create([
+            'post_id' => $request->input('post_id'),
+            'user_id' => $request->user()->id,
+            'body' => $request->input('body'),
+        ]);
+        return $store_data;
     }
 
     public function update(Request $request, $id)
@@ -20,6 +25,6 @@ class CommentApiController extends Controller
 
     public function destroy($id)
     {
-        Comment::where('id', $id)->delete();
+        return Comment::where('id', $id)->delete();
     }
 }

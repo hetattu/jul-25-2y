@@ -29,7 +29,7 @@ class PostApiController extends Controller
     {
         return [
             'post' => Post::where('id', $id)->first(),
-            'comments' => Comment::where('post_id', $id),
+            'comments' => Comment::where('post_id', $id)->orderBy('created_at', 'desc')->get(),
         ];
     }
 
