@@ -20,7 +20,7 @@
         <form v-on:submit.prevent="addComment">
           <div class="card">
             <div class="card-header">
-              <input type="text" class="col-sm-9 form-control" v-model="add_comment">
+              <input type="text" class="col-sm-9 form-control" v-model="commentAdd">
               <button type="submit" class="btn btn-success">Add</button>
             </div>
           </div>
@@ -28,10 +28,15 @@
       </div>
       <div class="col-md-8" v-for="comment in comments" v-bind:key="comment.id">
         <div class="card">
-          <div class="card-body">
-            <span>{{ comment.body }}</span>
-            <button class="btn btn-primary">Edit</button>
+          <div v-if="!comment.editable" class="card-body">
+            <div>{{ comment.body }}</div>
+            <button class="btn btn-success" v-on:click="editComment(comment.id)">Edit</button>
             <button class="btn btn-danger" v-on:click="deleteComment(comment.id)">Delete</button>
+          </div>
+          <div v-else class="card-body">
+            <input type="text" class="col-sm-9 form-control" v-model="comment.body">
+            <button class="btn btn-primary" v-on:click="updateComment(comment.id)">Update</button>
+            <button class="btn btn-danger" v-on:click="cancelEditComment(comment.id)">Cancel</button>
           </div>
         </div>
       </div>
@@ -48,14 +53,20 @@ export default {
     return {
       post: {},
       comments: {},
-      add_comment: ''
+      commentAdd: ''
     }
   },
   methods: {
     getPost() {
       axios.get('/api/posts/' + this.postId).then((res) => {
         this.post = res.data.post;
-        this.comments = res.data.comments;
+
+        var addArray = _.cloneDeepWith(res.data.comments, function (val) {
+            if (val !== null && typeof val.post_id != 'undefined') {
+              val.editable = false;
+            }
+        });
+        this.comments = addArray;
       });
     },
     deletePost() {
@@ -64,7 +75,7 @@ export default {
       });
     },
     submit() {
-      var post_data = {
+      var postData = {
         'subject': this.post.subject,
         'body': this.post.body
       };
@@ -73,24 +84,38 @@ export default {
       });
     },
     addComment() {
-      if (!this.add_comment) {
+      if (!this.commentAdd) {
         return;
       }
-      var post_data = {
+      var postData = {
         'post_id': this.postId,
-        'body': this.add_comment
+        'body': this.commentAdd
       };
-      axios.post('/api/comments', post_data).then((res) => {
+      axios.post('/api/comments', postData).then((res) => {
         this.comments.unshift(res.data);
-        this.add_comment = '';
+        this.commentAdd = '';
       });
     },
-    deleteComment(comment_id) {
-      axios.delete('/api/comments/' + comment_id).then((res) => {
-        this.comments = this.comments.filter(function (comment) {
-          return comment.id != comment_id;
-        });
+    deleteComment(commentId) {
+      axios.delete('/api/comments/' + commentId).then((res) => {
+        this.comments = this.comments.filter((cmt) => cmt.id != commentId);
       });
+    },
+    editComment(commentId) {
+      var comment = this.comments.find((cmt) => cmt.id == commentId);
+      comment.bodyBefore = comment.body;
+      comment.editable = true;
+    },
+    updateComment(commentId) {
+      var comment = this.comments.find((cmt) => cmt.id == commentId);
+      axios.put('/api/comments/' + commentId, comment).then((res) => {
+        comment.editable = false;
+      });
+    },
+    cancelEditComment(commentId) {
+      var comment = this.comments.find((cmt) => cmt.id == commentId);
+      comment.body = comment.bodyBefore;
+      comment.editable = false;
     }
   },
   mounted() {
