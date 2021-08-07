@@ -2,18 +2,26 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-8">
-        <form v-on:submit.prevent="submit">
-          <div class="card">
-            <div class="card-header">
-              <input type="text" class="col-sm-9 form-control" v-model="post.subject">
-            </div>
-
-            <div class="card-body">
-              <input type="text" class="col-sm-9 form-control" v-model="post.body">
-            </div>
+        <div class="card">
+          <div v-if="!post.subjectEditable" class="card-header">
+            <div>{{ post.subject }}</div>
+            <button class="btn btn-success" v-on:click="editSubject()">Edit</button>
           </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+          <div v-else class="card-header">
+            <input type="text" class="col-sm-9 form-control" v-model="post.subject">
+            <button class="btn btn-success" v-on:click="updatePost()">Update</button>
+            <button class="btn btn-danger" v-on:click="cancelEditSubject()">Cancel</button>
+          </div>
+          <div v-if="!post.bodyEditable" class="card-body">
+            <div>{{ post.body }}</div>
+            <button class="btn btn-success" v-on:click="editBody()">Edit</button>
+          </div>
+          <div v-else class="card-body">
+            <input type="text" class="col-sm-9 form-control" v-model="post.body">
+            <button class="btn btn-success" v-on:click="updatePost()">Update</button>
+            <button class="btn btn-primary" v-on:click="cancelEditBody()">Cancel</button>
+          </div>
+        </div>
         <button class="btn btn-danger" v-on:click="deletePost">Delete</button>
       </div>
       <div class="col-md-8">
@@ -59,6 +67,8 @@ export default {
   methods: {
     getPost() {
       axios.get('/api/posts/' + this.postId).then((res) => {
+        res.data.post.subjectEditable = false;
+        res.data.post.bodyEditable = false;
         this.post = res.data.post;
 
         var addArray = _.cloneDeepWith(res.data.comments, function (val) {
@@ -69,19 +79,32 @@ export default {
         this.comments = addArray;
       });
     },
+    updatePost() {
+      axios.put('/api/posts/' + this.postId, this.post).then((res) => {
+        this.post.subjectEditable = false;
+        this.post.bodyEditable = false;
+      });
+    },
     deletePost() {
       axios.delete('/api/posts/' + this.postId).then((res) => {
         this.$router.push({name: 'post.list'});
       });
     },
-    submit() {
-      var postData = {
-        'subject': this.post.subject,
-        'body': this.post.body
-      };
-      axios.put('/api/posts/' + this.postId, this.post).then((res) => {
-        this.post = res.data;
-      });
+    editSubject() {
+      this.post.subjectBefore = this.post.subject;
+      this.post.subjectEditable = true;
+    },
+    cancelEditSubject() {
+      this.post.subject = this.post.subjectBefore;
+      this.post.subjectEditable = false;
+    },
+    editBody() {
+      this.post.bodyBefore = this.post.body;
+      this.post.bodyEditable = true;
+    },
+    cancelEditBody() {
+      this.post.body = this.post.bodyBefore;
+      this.post.bodyEditable = false;
     },
     addComment() {
       if (!this.commentAdd) {
