@@ -25,5 +25,9 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('comments', 'App\Http\Controllers\CommentApiController')->only([
             'store', 'update', 'destroy'
         ]);
+
+        Route::apiResource('tags', 'App\Http\Controllers\TagApiController')->only([
+            'index', 'store', 'update', 'destroy'
+        ]);
     });
 });

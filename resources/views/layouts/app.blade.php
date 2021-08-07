@@ -84,16 +84,22 @@
             </div>
         </nav>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-2 px-1 position-fixed" id="sticky-sidebar">
-                    <side-bar></side-bar>
-                </div>
-                <div class="col offset-2 py-4" id="main">
-                    @yield('content')
+        @guest
+            <main class="py-4">
+                @yield('content')
+            </main>
+        @else
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-2 px-1 position-fixed" id="sticky-sidebar">
+                        <side-bar></side-bar>
+                    </div>
+                    <div class="col offset-2 py-4" id="main">
+                        @yield('content')
+                    </div>
                 </div>
             </div>
-        </div>
+        @endguest
     </div>
 </body>
 </html>

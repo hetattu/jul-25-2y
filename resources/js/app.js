@@ -8,6 +8,7 @@ import VueRouter from 'vue-router';
 import PostListComponent from './components/PostListComponent';
 import PostCreateComponent from './components/PostCreateComponent';
 import PostShowComponent from './components/PostShowComponent';
+import TagListComponent from './components/TagListComponent';
 
 require('./bootstrap');
 
@@ -37,6 +38,11 @@ const router = new VueRouter({
             name: 'post.show',
             component: PostShowComponent,
             props: (route) => ({postId: Number(route.params.postId)})
+        },
+        {
+            path: '/tags',
+            name: 'tag.list',
+            component: TagListComponent
         }
     ]
 });
