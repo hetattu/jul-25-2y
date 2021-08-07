@@ -84,9 +84,16 @@
             </div>
         </nav>
 
-        <main class="py-4">
-            @yield('content')
-        </main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-2 px-1 position-fixed" id="sticky-sidebar">
+                    <side-bar></side-bar>
+                </div>
+                <div class="col offset-2 py-4" id="main">
+                    @yield('content')
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
