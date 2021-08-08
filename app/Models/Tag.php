@@ -11,7 +11,6 @@ class Tag extends Model
 
     protected $fillable = [
         'name',
-        'color_code',
-        'order'
+        'color_code'
     ];
 }

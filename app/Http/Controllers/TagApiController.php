@@ -25,7 +25,7 @@ class TagApiController extends Controller
      */
     public function store(Request $request)
     {
-        Tag::create($request->all());
+        return Tag::create($request->all());
     }
 
     /**
