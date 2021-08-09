@@ -15,4 +15,6 @@ class Post extends Model
         'body',
         'tags'
     ];
+
+    protected $casts = ['tags' => 'json'];
 }

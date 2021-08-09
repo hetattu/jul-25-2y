@@ -73,7 +73,8 @@ export default {
         'color_code': this.colors.hex,
       };
       axios.post('/api/tags', postData).then((res) => {
-        this.tags.unshift(res.data);
+        res.data.colors = { hex: res.data.color_code };
+        this.tags.push(res.data);
         this.tag.name = '';
         this.tag.colorEditable = false;
         this.colors = { hex: "#" + Math.floor(Math.random() * 16777215).toString(16) };

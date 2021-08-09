@@ -1,7 +1,15 @@
 <template>
   <div class="container">
     <div class="row justify-content-center">
+      <div class="col-md-2">
+        <div class="card" v-for="tag in tags" v-bind:key="tag.id">
+          <div class="btn" v-bind:style="{'background-color': tag.color_code}" v-on:click="switchTag(tag.id)">
+            {{ tag.name }}
+          </div>
+        </div>
+      </div>
       <div class="col-md-8">
+        <span v-for="tag in post.tagsInfo" v-bind:key="'tag' + tag.id" v-bind:style="{'background-color': tag.color_code}">{{ tag.name }}</span>
         <div class="card">
           <div v-if="!post.subjectEditable" class="card-header">
             <div>{{ post.subject }}</div>
@@ -23,8 +31,6 @@
           </div>
         </div>
         <button class="btn btn-danger" v-on:click="deletePost">Delete</button>
-      </div>
-      <div class="col-md-8">
         <form v-on:submit.prevent="addComment">
           <div class="card">
             <div class="card-header">
@@ -33,9 +39,7 @@
             </div>
           </div>
         </form>
-      </div>
-      <div class="col-md-8" v-for="comment in comments" v-bind:key="comment.id">
-        <div class="card">
+        <div class="card" v-for="comment in comments" v-bind:key="comment.id">
           <div v-if="!comment.editable" class="card-body">
             <div>{{ comment.body }}</div>
             <button class="btn btn-success" v-on:click="editComment(comment.id)">Edit</button>
@@ -61,6 +65,7 @@ export default {
     return {
       post: {},
       comments: {},
+      tags: {},
       commentAdd: ''
     }
   },
@@ -69,6 +74,18 @@ export default {
       axios.get('/api/posts/' + this.postId).then((res) => {
         res.data.post.subjectEditable = false;
         res.data.post.bodyEditable = false;
+
+        var addTagArray = [];
+        res.data.post.tags.forEach((val) => {
+          var tag = res.data.tags.find((tag) => tag.id == val);
+          addTagArray.push({
+            id: val,
+            name: tag.name,
+            color_code: tag.color_code,
+            order: tag.order,
+          });
+        });
+        res.data.post.tagsInfo = addTagArray;
         this.post = res.data.post;
 
         var addArray = _.cloneDeepWith(res.data.comments, function (val) {
@@ -77,6 +94,7 @@ export default {
             }
         });
         this.comments = addArray;
+        this.tags = res.data.tags;
       });
     },
     updatePost() {
@@ -115,6 +133,8 @@ export default {
         'body': this.commentAdd
       };
       axios.post('/api/comments', postData).then((res) => {
+        res.data.editable = false;
+
         this.comments.unshift(res.data);
         this.commentAdd = '';
       });
@@ -139,7 +159,28 @@ export default {
       var comment = this.comments.find((cmt) => cmt.id == commentId);
       comment.body = comment.bodyBefore;
       comment.editable = false;
-    }
+    },
+    switchTag(tagId) {
+      if (this.post.tags.includes(tagId)) {
+        console.log('remove');
+        this.post.tags = this.post.tags.filter((val) => val != tagId);
+        axios.put('/api/posts/' + this.postId, this.post).then((res) => {
+          this.post.tagsInfo = this.post.tagsInfo.filter((tag) => tag.id != tagId);
+        });
+      } else {
+        console.log('add');
+        this.post.tags.push(tagId);
+        axios.put('/api/posts/' + this.postId, this.post).then((res) => {
+          var tag = this.tags.find((tag) => tag.id == tagId);
+          this.post.tagsInfo.push({
+            id: tagId,
+            name: tag.name,
+            color_code: tag.color_code,
+            order: tag.order,
+          });
+        });
+      }
+    },
   },
   mounted() {
     this.getPost();

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Tag;
 
 class PostApiController extends Controller
 {
@@ -21,15 +22,20 @@ class PostApiController extends Controller
             'user_id' => $request->user()->id,
             'subject' => $request->input('subject'),
             'body' => $request->input('body'),
-            'tags' => json_encode([]),
+            'tags' => $request->input('tags'),
         ]);
     }
 
     public function show($id)
     {
+        $post = Post::where('id', $id)->first();
+        $comments = Comment::where('post_id', $id)->orderBy('created_at', 'desc')->get();
+        $tags = Tag::orderBy('order', 'asc')->get();
+
         return [
-            'post' => Post::where('id', $id)->first(),
-            'comments' => Comment::where('post_id', $id)->orderBy('created_at', 'desc')->get(),
+            'post' => $post,
+            'comments' => $comments,
+            'tags' => $tags,
         ];
     }
 
