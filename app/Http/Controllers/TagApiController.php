@@ -48,7 +48,7 @@ class TagApiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $tag = Tag::where('id', $id)->get();
+        $tag = Tag::where('id', $id)->first();
         $tag->fill($request->all())->save();
         return $tag;
     }
