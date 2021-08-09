@@ -1,7 +1,18 @@
 <template>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-sm-6">
+      <div class="col-sm-2">
+        <div class="card" v-for="tag in tags" v-bind:key="tag.id">
+          <div v-if="!selectTags.includes(tag.id)" class="btn btn-outline-primary" v-bind:style="{'color': tag.color_code}" v-on:click="switchTag(tag.id)">
+            {{ tag.name }}
+          </div>
+          <div v-else class="btn" v-bind:style="{'background-color': tag.color_code}" v-on:click="switchTag(tag.id)">
+            {{ tag.name }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <span v-for="tagId in selectTags" v-bind:key="'tag' + tagId" v-bind:style="{'background-color': tagsInfo[tagId].color_code}">{{ tagsInfo[tagId].name }}</span>
         <form v-on:submit.prevent="submit">
           <div class="form-group row">
             <label for="title" class="col-sm-3 col-form-label">Subject</label>
@@ -23,20 +34,44 @@ export default {
   data: function () {
     return {
       subject: '',
-      body: ''
+      body: '',
+      tags: {},
+      tagsInfo: {},
+      selectTags: []
     }
   },
   methods: {
     submit() {
       var post_data = {
         'subject': this.subject,
-        'body': this.body
+        'body': this.body,
+        'tags': this.selectTags
       };
-      axios.post('/api/posts', post_data)
-        .then((res) => {
-          this.$router.push({name: 'post.list'});
+      axios.post('/api/posts', post_data).then((res) => {
+        this.$router.push({name: 'post.list'});
+      });
+    },
+    getTags() {
+      axios.get('/api/tags').then((res) => {
+        var addTagArray = [];
+        res.data.forEach((tag) => {
+          addTagArray[tag.id] = tag;
         });
+        this.tags = res.data;
+        this.tagsInfo = addTagArray;
+      });
+    },
+    switchTag(tagId) {
+      console.log(tagId);
+      if (this.selectTags.includes(tagId)) {
+        this.selectTags = this.selectTags.filter((val) => val != tagId);
+      } else {
+        this.selectTags.push(tagId);
+      }
     }
+  },
+  mounted() {
+    this.getTags();
   }
 }
 </script>

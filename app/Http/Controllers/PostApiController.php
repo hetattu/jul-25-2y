@@ -13,7 +13,10 @@ class PostApiController extends Controller
     public function index()
     {
         $user_id = Auth::id();
-        return Post::where('user_id', $user_id)->get();
+        return [
+            'posts' => Post::where('user_id', $user_id)->get(),
+            'tags' => Tag::orderBy('order', 'asc')->get(),
+        ];
     }
 
     public function store(Request $request)
