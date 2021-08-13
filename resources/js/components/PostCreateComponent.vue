@@ -54,10 +54,10 @@ export default {
     getTags() {
       axios.get('/api/tags').then((res) => {
         var addTagArray = [];
-        res.data.forEach((tag) => {
+        res.data.data.forEach((tag) => {
           addTagArray[tag.id] = tag;
         });
-        this.tags = res.data;
+        this.tags = res.data.data;
         this.tagsInfo = addTagArray;
       });
     },

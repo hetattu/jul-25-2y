@@ -89,7 +89,7 @@ export default {
         this.post = res.data.post;
 
         var addArray = _.cloneDeepWith(res.data.comments, function (val) {
-            if (val !== null && typeof val.post_id != 'undefined') {
+            if (val !== null && typeof val.user_id != 'undefined') {
               val.editable = false;
             }
         });

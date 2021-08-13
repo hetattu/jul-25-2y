@@ -7,15 +7,19 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Tag;
+use App\Http\Resources\Post as PostResource;
+use App\Http\Resources\Comment as CommentResource;
+use App\Http\Resources\Tag as TagResource;
 
 class PostApiController extends ApiController
 {
     public function index()
     {
-        $user_id = Auth::id();
+        $posts = Post::where('user_id', Auth::id())->get();
+        $tags = Tag::orderBy('order', 'asc')->get();
         return [
-            'posts' => Post::where('user_id', $user_id)->get(),
-            'tags' => Tag::orderBy('order', 'asc')->get(),
+            'posts' => PostResource::collection($posts),
+            'tags' => TagResource::collection($tags),
         ];
     }
 
@@ -36,9 +40,9 @@ class PostApiController extends ApiController
         $tags = Tag::orderBy('order', 'asc')->get();
 
         return [
-            'post' => $post,
-            'comments' => $comments,
-            'tags' => $tags,
+            'post' => new PostResource($post),
+            'comments' => CommentResource::collection($comments),
+            'tags' => TagResource::collection($tags),
         ];
     }
 

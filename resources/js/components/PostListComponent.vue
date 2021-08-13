@@ -49,7 +49,7 @@
           this.selectTags = res.data.tags.map((tag) => tag.id);
 
           var addArray = _.cloneDeepWith(res.data.posts, function (val) {
-            if (val !== null && typeof val.id !== 'undefined') {
+            if (val !== null && typeof val.user_id !== 'undefined') {
               val.display = true;
             }
           });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Tag;
+use App\Http\Resources\Tag as TagResource;
 
 class TagApiController extends ApiController
 {
@@ -14,7 +15,9 @@ class TagApiController extends ApiController
      */
     public function index()
     {
-        return Tag::orderBy('order', 'asc')->get();
+        return [
+            'tags' => TagResource::collection(Tag::orderBy('order', 'asc')->get()),
+        ];
     }
 
     /**
@@ -26,17 +29,6 @@ class TagApiController extends ApiController
     public function store(Request $request)
     {
         return Tag::create($request->all());
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**

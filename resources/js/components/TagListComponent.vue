@@ -50,7 +50,7 @@ export default {
   methods: {
     getTags() {
       axios.get('/api/tags').then((res) => {
-        var addArray = _.cloneDeepWith(res.data, function (val) {
+        var addArray = _.cloneDeepWith(res.data.tags, function (val) {
           if (val !== null && typeof val.id != 'undefined') {
             val.colors = { hex: val.color_code };
             val.colorEditable = false;
