@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 
-class CommentApiController extends Controller
+class CommentApiController extends ApiController
 {
     public function store(Request $request)
     {

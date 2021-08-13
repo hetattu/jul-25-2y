@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tag;
 
-class TagApiController extends Controller
+class TagApiController extends ApiController
 {
     /**
      * Display a listing of the resource.

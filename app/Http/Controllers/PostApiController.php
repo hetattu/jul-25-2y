@@ -8,7 +8,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Tag;
 
-class PostApiController extends Controller
+class PostApiController extends ApiController
 {
     public function index()
     {
