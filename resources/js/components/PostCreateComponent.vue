@@ -62,7 +62,6 @@ export default {
       });
     },
     switchTag(tagId) {
-      console.log(tagId);
       if (this.selectTags.includes(tagId)) {
         this.selectTags = this.selectTags.filter((val) => val != tagId);
       } else {
