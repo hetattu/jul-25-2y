@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Tag;
@@ -17,6 +19,7 @@ class PostApiController extends ApiController
     {
         $posts = Post::where('user_id', Auth::id())->get();
         $tags = Tag::orderBy('order', 'asc')->get();
+
         return [
             'posts' => PostResource::collection($posts),
             'tags' => TagResource::collection($tags),
@@ -25,19 +28,26 @@ class PostApiController extends ApiController
 
     public function store(Request $request)
     {
-        Post::create([
-            'user_id' => $request->user()->id,
-            'subject' => $request->input('subject'),
-            'body' => $request->input('body'),
-            'tags' => $request->input('tags'),
-        ]);
+        try {
+            $post = Post::create($request->all() + ['user_id' => $request->user()->id]);
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound();
+        } catch (QueryException $e) {
+            return $this->respondInvalidQuery();
+        }
+
+        return new PostResource($post);
     }
 
     public function show($id)
     {
-        $post = Post::where('id', $id)->first();
-        $comments = Comment::where('post_id', $id)->orderBy('created_at', 'desc')->get();
-        $tags = Tag::orderBy('order', 'asc')->get();
+        try {
+            $post = Post::findOrFail($id);
+            $comments = $post->comments;
+            $tags = Tag::orderBy('order', 'asc')->get();
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound();
+        }
 
         return [
             'post' => new PostResource($post),
@@ -48,13 +58,24 @@ class PostApiController extends ApiController
 
     public function update(Request $request, $id)
     {
-        $post = Post::where('id', $id)->first();
-        $post->fill($request->all())->save();
-        return json_encode($post);
+        try {
+            $post = Post::findOrFail($id);
+            $post->fill($request->all())->save();
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound();
+        }
+
+        return new PostResource($post);
     }
 
     public function destroy($id)
     {
-        Post::where('id', $id)->delete();
+        try {
+            Post::findOrFail($id)->delete();
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound();
+        }
+
+        return $this->respondObjectDeleted($id);
     }
 }

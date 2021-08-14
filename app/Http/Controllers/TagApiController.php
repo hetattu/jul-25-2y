@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Tag;
 use App\Http\Resources\Tag as TagResource;
 
@@ -15,9 +17,7 @@ class TagApiController extends ApiController
      */
     public function index()
     {
-        return [
-            'tags' => TagResource::collection(Tag::orderBy('order', 'asc')->get()),
-        ];
+        return TagResource::collection(Tag::orderBy('order', 'asc')->get());
     }
 
     /**
@@ -28,7 +28,15 @@ class TagApiController extends ApiController
      */
     public function store(Request $request)
     {
-        return Tag::create($request->all());
+        try {
+            $tag = Tag::create($request->all());
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound();
+        } catch (QueryException $e) {
+            return $this->respondInvalidQuery();
+        }
+
+        return new TagResource($tag);
     }
 
     /**
@@ -40,9 +48,14 @@ class TagApiController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        $tag = Tag::where('id', $id)->first();
-        $tag->fill($request->all())->save();
-        return $tag;
+        try {
+            $tag = Tag::findOrFail($id);
+            $tag->fill($request->all())->save();
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound();
+        }
+
+        return new TagResource($tag);
     }
 
     /**
@@ -53,6 +66,12 @@ class TagApiController extends ApiController
      */
     public function destroy($id)
     {
-        Tag::where('id', $id)->delete();
+        try {
+            Tag::findOrFail($id)->delete();
+        } catch (ModalNotFoundException $e) {
+            return $this->respondNotFound();
+        }
+
+        return $this->respondObjectDeleted($id);
     }
 }

@@ -133,9 +133,9 @@ export default {
         'body': this.commentAdd
       };
       axios.post('/api/comments', postData).then((res) => {
-        res.data.editable = false;
+        res.data.data.editable = false;
 
-        this.comments.unshift(res.data);
+        this.comments.unshift(res.data.data);
         this.commentAdd = '';
       });
     },
