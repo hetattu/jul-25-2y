@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="col-md-8">
-        <span v-for="tag in post.tagsInfo" v-bind:key="'tag' + tag.id" v-bind:style="{'background-color': tag.color_code}">{{ tag.name }}</span>
+        <span v-for="tagId in post.tags" v-bind:key="'tag' + tagId" v-bind:style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
         <div class="card">
           <div v-if="!post.subjectEditable" class="card-header">
             <div>{{ post.subject }}</div>
@@ -75,17 +75,6 @@ export default {
         res.data.post.subjectEditable = false;
         res.data.post.bodyEditable = false;
 
-        var addTagArray = [];
-        res.data.post.tags.forEach((val) => {
-          var tag = res.data.tags.find((tag) => tag.id == val);
-          addTagArray.push({
-            id: val,
-            name: tag.name,
-            color_code: tag.color_code,
-            order: tag.order,
-          });
-        });
-        res.data.post.tagsInfo = addTagArray;
         this.post = res.data.post;
 
         var addArray = _.cloneDeepWith(res.data.comments, function (val) {
@@ -96,6 +85,22 @@ export default {
         this.comments = addArray;
         this.tags = res.data.tags;
       });
+    },
+    getTagColorCode: function(tagId) {
+      var tag = this.tags.find((tag) => tag.id == tagId);
+      if (tag) {
+        return tag.color_code;
+      } else {
+        return '';
+      }
+    },
+    getTagName: function(tagId) {
+      var tag = this.tags.find((tag) => tag.id == tagId);
+      if (tag) {
+        return tag.name;
+      } else {
+        return '';
+      }
     },
     updatePost() {
       axios.put('/api/posts/' + this.postId, this.post).then((res) => {

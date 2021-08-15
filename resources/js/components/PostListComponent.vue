@@ -58,11 +58,19 @@
       },
       getTagColorCode: function(tagId) {
         var tag = this.tags.find((tag) => tag.id == tagId);
-        return tag.color_code;
+        if (tag) {
+          return tag.color_code;
+        } else {
+          return '';
+        }
       },
       getTagName: function(tagId) {
         var tag = this.tags.find((tag) => tag.id == tagId);
-        return tag.name;
+        if (tag) {
+          return tag.name;
+        } else {
+          return '';
+        }
       },
       switchTag(tagId) {
         if (this.selectTags.includes(tagId)) {
