@@ -15,6 +15,7 @@ require('./bootstrap');
 window.Vue = require('vue').default;
 
 Vue.use(VueRouter);
+Vue.component('FormInput', require('./components/form/Input.vue').default);
 
 const router = new VueRouter({
     mode: 'history',
