@@ -48,7 +48,7 @@
           this.tags = res.data.tags;
           this.selectTags = res.data.tags.map((tag) => tag.id);
 
-          var addArray = _.cloneDeepWith(res.data.posts, function (val) {
+          let addArray = _.cloneDeepWith(res.data.posts, function (val) {
             if (val !== null && typeof val.user_id !== 'undefined') {
               val.display = true;
             }
@@ -57,7 +57,7 @@
         });
       },
       getTagColorCode: function(tagId) {
-        var tag = this.tags.find((tag) => tag.id == tagId);
+        let tag = this.tags.find((tag) => tag.id === tagId);
         if (tag) {
           return tag.color_code;
         } else {
@@ -65,7 +65,7 @@
         }
       },
       getTagName: function(tagId) {
-        var tag = this.tags.find((tag) => tag.id == tagId);
+        let tag = this.tags.find((tag) => tag.id === tagId);
         if (tag) {
           return tag.name;
         } else {
@@ -74,13 +74,13 @@
       },
       switchTag(tagId) {
         if (this.selectTags.includes(tagId)) {
-          this.selectTags = this.selectTags.filter((val) => val != tagId);
+          this.selectTags = this.selectTags.filter((val) => val !== tagId);
         } else {
           this.selectTags.push(tagId);
         }
 
         this.posts.forEach((post) => {
-          if (post.tags.length == 0) {
+          if (post.tags.length === 0) {
             post.display = true;
           } else if ([...this.selectTags, post.tags].filter((item) => this.selectTags.includes(item) && post.tags.includes(item)).length > 0) {
             post.display = true;

@@ -3,21 +3,29 @@
     <div class="row justify-content-center">
       <div class="col-md-2">
         <div class="card" v-for="tag in tags" v-bind:key="tag.id">
-          <div class="btn" v-bind:style="{'background-color': tag.color_code}" v-on:click="switchTag(tag.id)">
+          <div class="btn" v-bind:style="{backgroundColor: tag.color_code}" v-on:click.prevent="switchTag(tag.id)">
             {{ tag.name }}
           </div>
         </div>
       </div>
       <div class="col-md-8">
-        <span v-for="tagId in post.tags" v-bind:key="'tag' + tagId" v-bind:style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+        <span v-for="tagId in post.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
         <div class="card">
           <div v-if="!post.subjectEditable" class="card-header">
             <div>{{ post.subject }}</div>
             <button class="btn btn-success" v-on:click="editSubject()">Edit</button>
           </div>
           <div v-else class="card-header">
-            <input type="text" class="col-sm-9 form-control" v-model="post.subject">
-            <button class="btn btn-success" v-on:click="updatePost()">Update</button>
+
+            <form-input
+              v-model="post.subject"
+              v-bind:input-type="'text'"
+              v-bind:maxlength="100"
+              v-bind:iclass="'col-sm-9 form-control'"
+              v-bind:title="'subject'"
+            />
+
+            <button class="btn btn-success" v-on:click.prevent="updatePost()">Update</button>
             <button class="btn btn-danger" v-on:click="cancelEditSubject()">Cancel</button>
           </div>
           <div v-if="!post.bodyEditable" class="card-body">
@@ -25,16 +33,29 @@
             <button class="btn btn-success" v-on:click="editBody()">Edit</button>
           </div>
           <div v-else class="card-body">
-            <input type="text" class="col-sm-9 form-control" v-model="post.body">
-            <button class="btn btn-success" v-on:click="updatePost()">Update</button>
+
+            <form-input
+              v-model="post.body"
+              v-bind:input-type="'text'"
+              v-bind:iclass="'col-sm-9 form-control'"
+              v-bind:title="'body'"
+            />
+
+            <button class="btn btn-success" v-on:click.prevent="updatePost()">Update</button>
             <button class="btn btn-primary" v-on:click="cancelEditBody()">Cancel</button>
           </div>
         </div>
-        <button class="btn btn-danger" v-on:click="deletePost">Delete</button>
+        <button class="btn btn-danger" v-on:click.prevent="deletePost()">Delete</button>
         <form v-on:submit.prevent="addComment">
           <div class="card">
             <div class="card-header">
-              <input type="text" class="col-sm-9 form-control" v-model="commentAdd">
+
+              <form-input
+                v-model="commentAdd"
+                v-bind:input-type="'text'"
+                v-bind:iclass="'col-sm-9 form-control'"
+              />
+
               <button type="submit" class="btn btn-success">Add</button>
             </div>
           </div>
@@ -43,11 +64,17 @@
           <div v-if="!comment.editable" class="card-body">
             <div>{{ comment.body }}</div>
             <button class="btn btn-success" v-on:click="editComment(comment.id)">Edit</button>
-            <button class="btn btn-danger" v-on:click="deleteComment(comment.id)">Delete</button>
+            <button class="btn btn-danger" v-on:click.prevent="deleteComment(comment.id)">Delete</button>
           </div>
           <div v-else class="card-body">
-            <input type="text" class="col-sm-9 form-control" v-model="comment.body">
-            <button class="btn btn-primary" v-on:click="updateComment(comment.id)">Update</button>
+
+            <form-input
+              v-model="comment.body"
+              v-bind:input-type="'text'"
+              v-bind:iclass="'col-sm-9 form-control'"
+            />
+
+            <button class="btn btn-primary" v-on:click.prevent="updateComment(comment.id)">Update</button>
             <button class="btn btn-danger" v-on:click="cancelEditComment(comment.id)">Cancel</button>
           </div>
         </div>
@@ -77,8 +104,8 @@ export default {
 
         this.post = res.data.post;
 
-        var addArray = _.cloneDeepWith(res.data.comments, function (val) {
-            if (val !== null && typeof val.user_id != 'undefined') {
+        let addArray = _.cloneDeepWith(res.data.comments, function (val) {
+            if (val !== null && typeof val.user_id !== 'undefined') {
               val.editable = false;
             }
         });
@@ -87,7 +114,7 @@ export default {
       });
     },
     getTagColorCode: function(tagId) {
-      var tag = this.tags.find((tag) => tag.id == tagId);
+      let tag = this.tags.find((tag) => tag.id === tagId);
       if (tag) {
         return tag.color_code;
       } else {
@@ -95,7 +122,7 @@ export default {
       }
     },
     getTagName: function(tagId) {
-      var tag = this.tags.find((tag) => tag.id == tagId);
+      let tag = this.tags.find((tag) => tag.id === tagId);
       if (tag) {
         return tag.name;
       } else {
@@ -133,7 +160,7 @@ export default {
       if (!this.commentAdd) {
         return;
       }
-      var postData = {
+      let postData = {
         'post_id': this.postId,
         'body': this.commentAdd
       };
@@ -146,37 +173,35 @@ export default {
     },
     deleteComment(commentId) {
       axios.delete('/api/comments/' + commentId).then((res) => {
-        this.comments = this.comments.filter((cmt) => cmt.id != commentId);
+        this.comments = this.comments.filter((cmt) => cmt.id !== commentId);
       });
     },
     editComment(commentId) {
-      var comment = this.comments.find((cmt) => cmt.id == commentId);
+      let comment = this.comments.find((cmt) => cmt.id === commentId);
       comment.bodyBefore = comment.body;
       comment.editable = true;
     },
     updateComment(commentId) {
-      var comment = this.comments.find((cmt) => cmt.id == commentId);
+      let comment = this.comments.find((cmt) => cmt.id === commentId);
       axios.put('/api/comments/' + commentId, comment).then((res) => {
         comment.editable = false;
       });
     },
     cancelEditComment(commentId) {
-      var comment = this.comments.find((cmt) => cmt.id == commentId);
+      let comment = this.comments.find((cmt) => cmt.id === commentId);
       comment.body = comment.bodyBefore;
       comment.editable = false;
     },
     switchTag(tagId) {
       if (this.post.tags.includes(tagId)) {
-        console.log('remove');
-        this.post.tags = this.post.tags.filter((val) => val != tagId);
+        this.post.tags = this.post.tags.filter((val) => val !== tagId);
         axios.put('/api/posts/' + this.postId, this.post).then((res) => {
-          this.post.tagsInfo = this.post.tagsInfo.filter((tag) => tag.id != tagId);
+          this.post.tagsInfo = this.post.tagsInfo.filter((tag) => tag.id !== tagId);
         });
       } else {
-        console.log('add');
         this.post.tags.push(tagId);
         axios.put('/api/posts/' + this.postId, this.post).then((res) => {
-          var tag = this.tags.find((tag) => tag.id == tagId);
+          let tag = this.tags.find((tag) => tag.id === tagId);
           this.post.tagsInfo.push({
             id: tagId,
             name: tag.name,

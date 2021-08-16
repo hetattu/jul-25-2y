@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="col-sm-8">
-        <span v-for="tagId in createForm.tags" v-bind:key="'tag' + tagId" v-bind:style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+        <span v-for="tagId in createForm.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
 
         <div class="form-group">
           <form-input
@@ -33,7 +33,7 @@
           />
         </div>
 
-        <button class="btn btn-success" v-on:click="submit()">Create</button>
+        <button class="btn btn-success" v-on:click.prevent="submit()">Create</button>
       </div>
     </div>
   </div>
@@ -66,17 +66,17 @@ export default {
     },
     switchTag(tagId) {
       if (this.createForm.tags.includes(tagId)) {
-        this.createForm.tags = this.createForm.tags.filter(val => val != tagId);
+        this.createForm.tags = this.createForm.tags.filter(val => val !== tagId);
       } else {
         this.createForm.tags.push(tagId);
       }
     },
     getTagColorCode(tagId) {
-      var tag = this.tags.find(tag => tag.id == tagId);
+      let tag = this.tags.find(tag => tag.id === tagId);
       return tag.color_code;
     },
     getTagName(tagId) {
-      var tag = this.tags.find(tag => tag.id == tagId);
+      let tag = this.tags.find(tag => tag.id === tagId);
       return tag.name;
     }
   },
