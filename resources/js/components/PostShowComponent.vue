@@ -1,3 +1,12 @@
+<style scoped>
+  .list-enter-active, .list-leave-active {
+    transition: all 0.5s;
+  }
+  .list-enter, .list-leave-to {
+    opacity: 0;
+  }
+</style>
+
 <template>
   <div class="container">
     <div class="row justify-content-center">
@@ -9,7 +18,9 @@
         </div>
       </div>
       <div class="col-md-8">
-        <span v-for="tagId in post.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+        <transition-group name="list">
+          <span v-for="tagId in post.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+        </transition-group>
         <div class="card">
           <div v-if="!post.subjectEditable" class="card-header">
             <div>{{ post.subject }}</div>

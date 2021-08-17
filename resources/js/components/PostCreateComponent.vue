@@ -1,3 +1,12 @@
+<style scoped>
+  .list-enter-active, .list-leave-active {
+    transition: all 0.5s;
+  }
+  .list-enter, .list-leave-to {
+    opacity: 0;
+  }
+</style>
+
 <template>
   <div class="container">
     <div class="row justify-content-center">
@@ -12,7 +21,9 @@
         </div>
       </div>
       <div class="col-sm-8">
-        <span v-for="tagId in createForm.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+        <transition-group name="list">
+          <span v-for="tagId in createForm.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+        </transition-group>
 
         <div class="form-group">
           <form-input
@@ -49,7 +60,7 @@ export default {
         body: '',
         tags: [],
       },
-      tags: {},
+      tags: [],
     }
   },
  
