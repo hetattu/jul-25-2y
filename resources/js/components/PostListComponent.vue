@@ -13,7 +13,9 @@
       </div>
 
       <div class="col-md-8">
-        <div v-for="post in posts" :key="post.id" v-show="post.display">
+        <form-input v-model="query" :title="'検索'"/><br>
+
+        <div v-for="post in filteredList" :key="post.id" v-show="post.display">
           <span v-for="tagId in post.tags" :key="'tag' + tagId" :style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
           <div class="card">
             <div class="card-header">
@@ -40,8 +42,10 @@
         posts: [],
         tags: [],
         selectTags: [],
+        query: '',
       }
     },
+
     methods: {
       getPosts() {
         axios.get('/api/posts').then((res) => {
@@ -90,8 +94,18 @@
         });
       }
     },
+
     mounted() {
       this.getPosts();
+    },
+
+    computed: {
+      filteredList() {
+        let that = this;
+        return this.posts.filter(post => {
+          return post.subject.indexOf(that.query) !== -1;
+        });
+      }
     }
   }
 </script>

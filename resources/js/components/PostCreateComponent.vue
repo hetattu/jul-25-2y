@@ -29,16 +29,14 @@
           <form-input
             :id="'subject'"
             v-model="createForm.subject"
-            :input-type="'text'"
-            :maxlength="255"
+            :maxlength="100"
             :iclass="'col-sm-9 form-control'"
             :title="'Subject'"
           />
+          {{ createForm.subject.length }}
           <form-input
             :id="'body'"
             v-model="createForm.body"
-            :input-type="'text'"
-            :maxlength="255"
             :iclass="'col-sm-9 form-control'"
             :title="'Body'"
           />

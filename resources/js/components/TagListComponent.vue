@@ -7,11 +7,11 @@
 
             <form-input
               v-model="tag.name"
-              :input-type="'text'"
               :maxlength="100"
               :iclass="'col-sm-9 form-control'"
               :title="'name'"
             />
+            {{ tag.name.length }}
 
             <button class="btn" @click="switchColor(null)" :style="{backgroundColor: colors.hex}" style="color:white; line-height:2em;">{{ colors.hex }}</button>
             <compact-picker v-if="tag.colorEditable" v-model="colors" />
@@ -29,11 +29,11 @@
 
             <form-input
               v-model="tag.name"
-              :input-type="'text'"
               :maxlength="100"
               :iclass="'col-sm-9 form-control'"
               :title="'name'"
             />
+            {{ tag.name.length }}
 
             <button class="btn" @click="switchColor(tag.id)" :style="{backgroundColor: tag.colors.hex}" style="color:white; line-height:2em;">{{ tag.colors.hex }}</button>
             <compact-picker v-if="tag.colorEditable" v-model="tag.colors" />

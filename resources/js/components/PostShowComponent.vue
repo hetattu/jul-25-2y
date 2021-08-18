@@ -30,11 +30,11 @@
 
             <form-input
               v-model="post.subject"
-              :input-type="'text'"
               :maxlength="100"
               :iclass="'col-sm-9 form-control'"
               :title="'subject'"
             />
+            {{ post.subject.length }}
 
             <button class="btn btn-success" @click.prevent="updatePost()">Update</button>
             <button class="btn btn-danger" @click="cancelEditSubject()">Cancel</button>
@@ -47,7 +47,6 @@
 
             <form-input
               v-model="post.body"
-              :input-type="'text'"
               :iclass="'col-sm-9 form-control'"
               :title="'body'"
             />
@@ -63,7 +62,6 @@
 
               <form-input
                 v-model="commentAdd"
-                :input-type="'text'"
                 :iclass="'col-sm-9 form-control'"
               />
 
@@ -81,7 +79,6 @@
 
             <form-input
               v-model="comment.body"
-              :input-type="'text'"
               :iclass="'col-sm-9 form-control'"
             />
 
