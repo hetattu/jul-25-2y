@@ -2,23 +2,23 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-2">
-        <div class="card" v-for="tag in tags" v-bind:key="tag.id">
-          <div v-if="!selectTags.includes(tag.id)" class="btn btn-outline-primary" v-bind:style="{'color': tag.color_code}" v-on:click="switchTag(tag.id)">
+        <div class="card" v-for="tag in tags" :key="tag.id">
+          <div v-if="!selectTags.includes(tag.id)" class="btn btn-outline-primary" :style="{'color': tag.color_code}" @click="switchTag(tag.id)">
             {{ tag.name }}
           </div>
-          <div v-else class="btn" v-bind:style="{'background-color': tag.color_code}" v-on:click="switchTag(tag.id)">
+          <div v-else class="btn" :style="{'background-color': tag.color_code}" @click="switchTag(tag.id)">
             {{ tag.name }}
           </div>
         </div>
       </div>
 
       <div class="col-md-8">
-        <div v-for="post in posts" v-bind:key="post.id" v-show="post.display">
-          <span v-for="tagId in post.tags" v-bind:key="'tag' + tagId" v-bind:style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+        <div v-for="post in posts" :key="post.id" v-show="post.display">
+          <span v-for="tagId in post.tags" :key="'tag' + tagId" :style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
           <div class="card">
             <div class="card-header">
               {{ post.subject }}
-              <router-link v-bind:to="{name: 'post.show', params: {postId: post.id}}">
+              <router-link :to="{name: 'post.show', params: {postId: post.id}}">
                 <button class="btn btn-primary">Show</button>
               </router-link>
             </div>

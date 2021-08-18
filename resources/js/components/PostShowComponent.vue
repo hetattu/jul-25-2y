@@ -11,82 +11,82 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-2">
-        <div class="card" v-for="tag in tags" v-bind:key="tag.id">
-          <div class="btn" v-bind:style="{backgroundColor: tag.color_code}" v-on:click.prevent="switchTag(tag.id)">
+        <div class="card" v-for="tag in tags" :key="tag.id">
+          <div class="btn" :style="{backgroundColor: tag.color_code}" @click.prevent="switchTag(tag.id)">
             {{ tag.name }}
           </div>
         </div>
       </div>
       <div class="col-md-8">
         <transition-group name="list">
-          <span v-for="tagId in post.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+          <span v-for="tagId in post.tags" :key="'tag' + tagId" :style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
         </transition-group>
         <div class="card">
           <div v-if="!post.subjectEditable" class="card-header">
             <div>{{ post.subject }}</div>
-            <button class="btn btn-success" v-on:click="editSubject()">Edit</button>
+            <button class="btn btn-success" @click="editSubject()">Edit</button>
           </div>
           <div v-else class="card-header">
 
             <form-input
               v-model="post.subject"
-              v-bind:input-type="'text'"
-              v-bind:maxlength="100"
-              v-bind:iclass="'col-sm-9 form-control'"
-              v-bind:title="'subject'"
+              :input-type="'text'"
+              :maxlength="100"
+              :iclass="'col-sm-9 form-control'"
+              :title="'subject'"
             />
 
-            <button class="btn btn-success" v-on:click.prevent="updatePost()">Update</button>
-            <button class="btn btn-danger" v-on:click="cancelEditSubject()">Cancel</button>
+            <button class="btn btn-success" @click.prevent="updatePost()">Update</button>
+            <button class="btn btn-danger" @click="cancelEditSubject()">Cancel</button>
           </div>
           <div v-if="!post.bodyEditable" class="card-body">
             <div>{{ post.body }}</div>
-            <button class="btn btn-success" v-on:click="editBody()">Edit</button>
+            <button class="btn btn-success" @click="editBody()">Edit</button>
           </div>
           <div v-else class="card-body">
 
             <form-input
               v-model="post.body"
-              v-bind:input-type="'text'"
-              v-bind:iclass="'col-sm-9 form-control'"
-              v-bind:title="'body'"
+              :input-type="'text'"
+              :iclass="'col-sm-9 form-control'"
+              :title="'body'"
             />
 
-            <button class="btn btn-success" v-on:click.prevent="updatePost()">Update</button>
-            <button class="btn btn-primary" v-on:click="cancelEditBody()">Cancel</button>
+            <button class="btn btn-success" @click.prevent="updatePost()">Update</button>
+            <button class="btn btn-primary" @click="cancelEditBody()">Cancel</button>
           </div>
         </div>
-        <button class="btn btn-danger" v-on:click.prevent="deletePost()">Delete</button>
-        <form v-on:submit.prevent="addComment">
+        <button class="btn btn-danger" @click.prevent="deletePost()">Delete</button>
+        <form @submit.prevent="addComment">
           <div class="card">
             <div class="card-header">
 
               <form-input
                 v-model="commentAdd"
-                v-bind:input-type="'text'"
-                v-bind:iclass="'col-sm-9 form-control'"
+                :input-type="'text'"
+                :iclass="'col-sm-9 form-control'"
               />
 
               <button type="submit" class="btn btn-success">Add</button>
             </div>
           </div>
         </form>
-        <div class="card" v-for="comment in comments" v-bind:key="comment.id">
+        <div class="card" v-for="comment in comments" :key="comment.id">
           <div v-if="!comment.editable" class="card-body">
             <div>{{ comment.body }}</div>
-            <button class="btn btn-success" v-on:click="editComment(comment.id)">Edit</button>
-            <button class="btn btn-danger" v-on:click.prevent="deleteComment(comment.id)">Delete</button>
+            <button class="btn btn-success" @click="editComment(comment.id)">Edit</button>
+            <button class="btn btn-danger" @click.prevent="deleteComment(comment.id)">Delete</button>
           </div>
           <div v-else class="card-body">
 
             <form-input
               v-model="comment.body"
-              v-bind:input-type="'text'"
-              v-bind:iclass="'col-sm-9 form-control'"
+              :input-type="'text'"
+              :iclass="'col-sm-9 form-control'"
             />
 
-            <button class="btn btn-primary" v-on:click.prevent="updateComment(comment.id)">Update</button>
-            <button class="btn btn-danger" v-on:click="cancelEditComment(comment.id)">Cancel</button>
+            <button class="btn btn-primary" @click.prevent="updateComment(comment.id)">Update</button>
+            <button class="btn btn-danger" @click="cancelEditComment(comment.id)">Cancel</button>
           </div>
         </div>
       </div>

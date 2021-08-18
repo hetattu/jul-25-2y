@@ -7,38 +7,38 @@
 
             <form-input
               v-model="tag.name"
-              v-bind:input-type="'text'"
-              v-bind:maxlength="100"
-              v-bind:iclass="'col-sm-9 form-control'"
-              v-bind:title="'name'"
+              :input-type="'text'"
+              :maxlength="100"
+              :iclass="'col-sm-9 form-control'"
+              :title="'name'"
             />
 
-            <button class="btn" v-on:click="switchColor(null)" v-bind:style="{backgroundColor: colors.hex}" style="color:white; line-height:2em;">{{ colors.hex }}</button>
+            <button class="btn" @click="switchColor(null)" :style="{backgroundColor: colors.hex}" style="color:white; line-height:2em;">{{ colors.hex }}</button>
             <compact-picker v-if="tag.colorEditable" v-model="colors" />
             <button v-if="!tag.name" class="btn btn-primary">Add</button>
-            <button v-else class="btn btn-success" v-on:click.prevent="addTag()">Add</button>
+            <button v-else class="btn btn-success" @click.prevent="addTag()">Add</button>
           </div>
         </div>
-        <div class="card" v-for="tag in tags" v-bind:key="tag.id">
-          <div v-if="!tag.editable" class="card-body" v-bind:style="{backgroundColor: tag.colors.hex}" style="color:white;">
+        <div class="card" v-for="tag in tags" :key="tag.id">
+          <div v-if="!tag.editable" class="card-body" :style="{backgroundColor: tag.colors.hex}" style="color:white;">
             <span>{{ tag.name }}</span>
-            <button class="btn btn-outline-primary" style="color:white;" v-on:click="editTag(tag.id)">Edit</button>
-            <button class="btn btn-outline-danger" style="color:white;" v-on:click.prevent="deleteTag(tag.id)">Delete</button>
+            <button class="btn btn-outline-primary" style="color:white;" @click="editTag(tag.id)">Edit</button>
+            <button class="btn btn-outline-danger" style="color:white;" @click.prevent="deleteTag(tag.id)">Delete</button>
           </div>
           <div v-else class="card-body" style="color:white;">
 
             <form-input
               v-model="tag.name"
-              v-bind:input-type="'text'"
-              v-bind:maxlength="100"
-              v-bind:iclass="'col-sm-9 form-control'"
-              v-bind:title="'name'"
+              :input-type="'text'"
+              :maxlength="100"
+              :iclass="'col-sm-9 form-control'"
+              :title="'name'"
             />
 
-            <button class="btn" v-on:click="switchColor(tag.id)" v-bind:style="{backgroundColor: tag.colors.hex}" style="color:white; line-height:2em;">{{ tag.colors.hex }}</button>
+            <button class="btn" @click="switchColor(tag.id)" :style="{backgroundColor: tag.colors.hex}" style="color:white; line-height:2em;">{{ tag.colors.hex }}</button>
             <compact-picker v-if="tag.colorEditable" v-model="tag.colors" />
-            <button class="btn btn-success" style="color:white;" v-on:click.prevent="updateTag(tag.id)">Update</button>
-            <button class="btn btn-danger" style="color:white;" v-on:click="cancelEditTag(tag.id)">Cancel</button>
+            <button class="btn btn-success" style="color:white;" @click.prevent="updateTag(tag.id)">Update</button>
+            <button class="btn btn-danger" style="color:white;" @click="cancelEditTag(tag.id)">Cancel</button>
           </div>
         </div>
       </div>

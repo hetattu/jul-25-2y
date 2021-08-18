@@ -11,40 +11,40 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-sm-2">
-        <div class="card" v-for="tag in tags" v-bind:key="tag.id">
-          <div v-if="!createForm.tags.includes(tag.id)" class="btn btn-outline-primary" v-bind:style="{'color': tag.color_code}" v-on:click="switchTag(tag.id)">
+        <div class="card" v-for="tag in tags" :key="tag.id">
+          <div v-if="!createForm.tags.includes(tag.id)" class="btn btn-outline-primary" :style="{'color': tag.color_code}" @click="switchTag(tag.id)">
             {{ tag.name }}
           </div>
-          <div v-else class="btn" v-bind:style="{'background-color': tag.color_code}" v-on:click="switchTag(tag.id)">
+          <div v-else class="btn" :style="{'background-color': tag.color_code}" @click="switchTag(tag.id)">
             {{ tag.name }}
           </div>
         </div>
       </div>
       <div class="col-sm-8">
         <transition-group name="list">
-          <span v-for="tagId in createForm.tags" v-bind:key="'tag' + tagId" v-bind:style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
+          <span v-for="tagId in createForm.tags" :key="'tag' + tagId" :style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
         </transition-group>
 
         <div class="form-group">
           <form-input
-            v-bind:id="'subject'"
+            :id="'subject'"
             v-model="createForm.subject"
-            v-bind:input-type="'text'"
-            v-bind:maxlength="255"
-            v-bind:iclass="'col-sm-9 form-control'"
-            v-bind:title="'Subject'"
+            :input-type="'text'"
+            :maxlength="255"
+            :iclass="'col-sm-9 form-control'"
+            :title="'Subject'"
           />
           <form-input
-            v-bind:id="'body'"
+            :id="'body'"
             v-model="createForm.body"
-            v-bind:input-type="'text'"
-            v-bind:maxlength="255"
-            v-bind:iclass="'col-sm-9 form-control'"
-            v-bind:title="'Body'"
+            :input-type="'text'"
+            :maxlength="255"
+            :iclass="'col-sm-9 form-control'"
+            :title="'Body'"
           />
         </div>
 
-        <button class="btn btn-success" v-on:click.prevent="submit()">Create</button>
+        <button class="btn btn-success" @click.prevent="submit()">Create</button>
       </div>
     </div>
   </div>
