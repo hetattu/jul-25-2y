@@ -117,8 +117,8 @@ export default {
       }
     },
     remove (item) {
-      this.createForm.tags.splice(this.createForm.tags.indexOf(item), 1)
-      this.createForm.tags = [...this.createForm.tags]
+      this.comboboxTags.splice(this.comboboxTags.indexOf(item), 1)
+      this.comboboxTags = [...this.comboboxTags]
     },
   },
 
