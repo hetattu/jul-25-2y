@@ -13,7 +13,7 @@
       </div>
 
       <div class="col-md-8">
-        <form-input v-model="query" :title="'検索'"/><br>
+        <form-input v-model="query"/><br>
 
         <div v-for="post in filteredList" :key="post.id" v-show="post.display">
           <span v-for="tagId in post.tags" :key="'tag' + tagId" :style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>

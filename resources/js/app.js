@@ -5,6 +5,7 @@
  */
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import Vuetify from 'vuetify';
 import PostListComponent from './components/PostListComponent';
 import PostCreateComponent from './components/PostCreateComponent';
 import PostShowComponent from './components/PostShowComponent';
@@ -15,6 +16,7 @@ require('./bootstrap');
 window.Vue = require('vue').default;
 
 Vue.use(VueRouter);
+Vue.use(Vuetify);
 Vue.component('FormInput', require('./components/form/Input.vue').default);
 
 const router = new VueRouter({
@@ -85,5 +87,8 @@ const app = new Vue({
     components: {
         SideBar,
     },
-    router
+    router,
+    vuetify: new Vuetify({
+        iconfont: 'mdi',
+    }),
 });
