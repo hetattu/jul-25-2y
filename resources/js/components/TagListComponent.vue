@@ -2,45 +2,70 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-8">
-        <div class="card">
-          <div class="card-header">
 
-            <form-input
+        <v-card v-show="tags.length < 10" class="mx-auto mb-4">
+          <div
+            :style="{'background-color': colors.hex}"
+            @click="switchColor(0)"
+          >
+          <br>
+          <br>
+          </div>
+          <compact-picker v-if="colorEditableTab === 0" v-model="colors" />
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+            class="pa-2"
+          >
+            <v-text-field
               v-model="tag.name"
-              :maxlength="100"
-              :iclass="'col-sm-9 form-control'"
-              :title="'name'"
-            />
-            {{ tag.name.length }}
+              :counter="50"
+              :rules="nameRules"
+              label="Name"
+              required
+            ></v-text-field>
 
-            <button class="btn" @click="switchColor(null)" :style="{backgroundColor: colors.hex}" style="color:white; line-height:2em;">{{ colors.hex }}</button>
-            <compact-picker v-if="tag.colorEditable" v-model="colors" />
-            <button v-if="!tag.name" class="btn btn-primary">Add</button>
-            <button v-else class="btn btn-success" @click.prevent="addTag()">Add</button>
-          </div>
-        </div>
-        <div class="card" v-for="tag in tags" :key="tag.id">
-          <div v-if="!tag.editable" class="card-body" :style="{backgroundColor: tag.colors.hex}" style="color:white;">
-            <span>{{ tag.name }}</span>
-            <button class="btn btn-outline-primary" style="color:white;" @click="editTag(tag.id)">Edit</button>
-            <button class="btn btn-outline-danger" style="color:white;" @click.prevent="deleteTag(tag.id)">Delete</button>
-          </div>
-          <div v-else class="card-body" style="color:white;">
+            <v-btn
+              :disabled="!valid"
+              color="success"
+              class="mt-4"
+              @click="create"
+            >
+              Create
+            </v-btn>
+          </v-form>
+        </v-card>
 
-            <form-input
-              v-model="tag.name"
-              :maxlength="100"
-              :iclass="'col-sm-9 form-control'"
-              :title="'name'"
-            />
-            {{ tag.name.length }}
-
-            <button class="btn" @click="switchColor(tag.id)" :style="{backgroundColor: tag.colors.hex}" style="color:white; line-height:2em;">{{ tag.colors.hex }}</button>
-            <compact-picker v-if="tag.colorEditable" v-model="tag.colors" />
-            <button class="btn btn-success" style="color:white;" @click.prevent="updateTag(tag.id)">Update</button>
-            <button class="btn btn-danger" style="color:white;" @click="cancelEditTag(tag.id)">Cancel</button>
+        <v-card
+          class="mx-auto mb-4"
+          v-for="tag in tags"
+          :key="tag.id"
+        >
+          <div
+            :style="{'background-color': tag.colors.hex}"
+            @click="switchColor(tag.id)"
+          >
+          <br>
           </div>
-        </div>
+          <compact-picker v-if="colorEditableTab === tag.id" v-model="tag.colors" />
+          <v-card-title>
+            <div v-if="!tag.editable" @click="editTag(tag.id)" class="mb-2">
+              {{ tag.name }}
+            </div>
+            <div v-else>
+              <v-text-field
+                v-model="tag.name"
+                :counter="50"
+                :rules="nameRules"
+                label="Name"
+                required
+                @keyup.enter="updateTag(tag.id)"
+                @blur="updateTag(tag.id)"
+              ></v-text-field>
+            </div>
+          </v-card-title>
+        </v-card>
       </div>
     </div>
   </div>
@@ -55,9 +80,14 @@ export default {
       colors: { hex: "#" + Math.floor(Math.random() * 16777215).toString(16) },
       tag: {
         name: '',
-        colorEditable: false
       },
-      tags: []
+      tags: [],
+
+      valid: true,
+      nameRules: [
+        v => !!v || 'Name is required',
+      ],
+      colorEditableTab: null,
     }
   },
   components: {
@@ -69,7 +99,6 @@ export default {
         let addArray = _.cloneDeepWith(res.data.data, function (val) {
           if (val !== null && typeof val.id !== 'undefined') {
             val.colors = { hex: val.color_code };
-            val.colorEditable = false;
             val.editable = false;
           }
         });
@@ -77,39 +106,50 @@ export default {
       });
     },
     switchColor(tagId) {
-      let tag = tagId ? this.tags.find((tag) => tag.id === tagId) : this.tag;
-      if (tag.colorEditable) {
-        tag.color_code = this.colors.hex;
+      let tag = tagId > 0 ? this.tags.find((tag) => tag.id === tagId) : this.tag;
+      if (tagId > 0) {
+        this.updateTag(this.colorEditableTab);
       }
-      tag.colorEditable = !tag.colorEditable;
+
+      if (this.colorEditableTab === tagId) {
+        this.colorEditableTab = null;
+
+      } else {
+        if (tagId > 0) {
+          tag.beforeColors = tag.colors;
+        }
+        this.colorEditableTab = tagId;
+      }
     },
     addTag() {
       let postData = {
         'name': this.tag.name,
         'color_code': this.colors.hex,
       };
+
       axios.post('/api/tags', postData).then((res) => {
-        res.data.colors = { hex: res.data.color_code };
-        this.tags.push(res.data);
+        res.data.data.colors = { hex: res.data.data.color_code };
+        this.tags.push(res.data.data);
         this.tag.name = '';
-        this.tag.colorEditable = false;
         this.colors = { hex: "#" + Math.floor(Math.random() * 16777215).toString(16) };
       });
     },
     editTag(tagId) {
       let tag = this.tags.find((tag) => tag.id === tagId);
       tag.beforeName = tag.name;
-      tag.beforeColors = tag.colors;
       tag.editable = true;
-    },
-    cancelEditTag(tagId) {
-      let tag = this.tags.find((tag) => tag.id === tagId);
-      tag.name = tag.beforeName;
-      tag.colors = tag.beforeColors;
-      tag.editable = false;
     },
     updateTag(tagId) {
       let tag = this.tags.find((tag) => tag.id === tagId);
+      if (!tag) {
+        return;
+      } else if (tag.name === tag.beforeName || tag.name === '') {
+        tag.editable = false;
+        return;
+      } else if (tag.colors.hex === tag.beforeColors.hex) {
+        return;
+      }
+
       let postData = {
         'name': tag.name,
         'color_code': tag.colors.hex,
@@ -118,10 +158,11 @@ export default {
         tag.editable = false;
       });
     },
-    deleteTag(tagId) {
-      axios.delete('/api/tags/' + tagId).then((res) => {
-        this.tags = this.tags.filter((tag) => tag.id !== tagId);
-      });
+
+    create() {
+      if (this.$refs.form.validate()) {
+        this.addTag();
+      }
     }
   },
   mounted() {
