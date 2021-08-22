@@ -18,6 +18,7 @@ window.Vue = require('vue').default;
 Vue.use(VueRouter);
 Vue.use(Vuetify);
 Vue.component('FormInput', require('./components/form/Input.vue').default);
+Vue.component('PostCard', require('./components/partials/PostCard.vue').default);
 
 const router = new VueRouter({
     mode: 'history',

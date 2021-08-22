@@ -14,21 +14,13 @@
 
       <div class="col-md-8">
         <form-input v-model="query"/><br>
-
         <div v-for="post in filteredList" :key="post.id" v-show="post.display">
-          <span v-for="tagId in post.tags" :key="'tag' + tagId" :style="{'background-color': getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
-          <div class="card">
-            <div class="card-header">
-              {{ post.subject }}
-              <router-link :to="{name: 'post.show', params: {postId: post.id}}">
-                <button class="btn btn-primary">Show</button>
-              </router-link>
-            </div>
 
-            <div class="card-body">
-              {{ post.body }}
-            </div>
-          </div>
+        <post-card
+          :post="post"
+          :tags="tags"
+        ></post-card>
+
         </div>
       </div>
     </div>
@@ -59,22 +51,6 @@
           });
           this.posts = addArray;
         });
-      },
-      getTagColorCode: function(tagId) {
-        let tag = this.tags.find((tag) => tag.id === tagId);
-        if (tag) {
-          return tag.color_code;
-        } else {
-          return '';
-        }
-      },
-      getTagName: function(tagId) {
-        let tag = this.tags.find((tag) => tag.id === tagId);
-        if (tag) {
-          return tag.name;
-        } else {
-          return '';
-        }
       },
       switchTag(tagId) {
         if (this.selectTags.includes(tagId)) {
