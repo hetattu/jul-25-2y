@@ -9,42 +9,56 @@
 
 <template>
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-sm-2">
-        <div class="card" v-for="tag in tags" :key="tag.id">
-          <div v-if="!createForm.tags.includes(tag.id)" class="btn btn-outline-primary" :style="{'color': tag.color_code}" @click="switchTag(tag.id)">
-            {{ tag.name }}
-          </div>
-          <div v-else class="btn" :style="{'background-color': tag.color_code}" @click="switchTag(tag.id)">
-            {{ tag.name }}
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-8">
-        <transition-group name="list">
-          <span v-for="tagId in createForm.tags" :key="'tag' + tagId" :style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
-        </transition-group>
+    <v-form
+      ref="form"
+      v-model="valid"
+      lazy-validation
+    >
+      <v-text-field
+        v-model="createForm.subject"
+        :counter="100"
+        :rules="subjectRules"
+        label="Subject"
+        required
+      ></v-text-field>
 
-        <div class="form-group">
-          <form-input
-            :id="'subject'"
-            v-model="createForm.subject"
-            :maxlength="100"
-            :iclass="'col-sm-9 form-control'"
-            :title="'Subject'"
-          />
-          {{ createForm.subject.length }}
-          <form-input
-            :id="'body'"
-            v-model="createForm.body"
-            :iclass="'col-sm-9 form-control'"
-            :title="'Body'"
-          />
-        </div>
+      <v-textarea
+        v-model="createForm.body"
+        :rules="bodyRules"
+        label="body"
+        rows="3"
+        required
+      ></v-textarea>
 
-        <button class="btn btn-success" @click.prevent="submit()">Create</button>
-      </div>
-    </div>
+      <v-combobox
+        v-model="comboboxTags"
+        :items="tags.map(tag => tag.name)"
+        chips
+        label="Your favorite hobbies"
+        multiple
+      >
+        <template v-slot:selection="{ attrs, item, select, selected }">
+          <v-chip
+            v-bind="attrs"
+            :input-value="selected"
+            close
+            @click="select"
+            @click:close="remove(item)"
+          >
+            <strong>{{ item }}</strong>
+          </v-chip>
+        </template>
+      </v-combobox>
+
+      <v-btn
+        :disabled="!valid"
+        color="success"
+        class="mr-4"
+        @click="create"
+      >
+        Create
+      </v-btn>
+    </v-form>
   </div>
 </template>
 
@@ -59,6 +73,16 @@ export default {
         tags: [],
       },
       tags: [],
+      comboboxTags: [],
+
+      valid: true,
+      subjectRules: [
+        v => !!v || 'Subject is required',
+        v => (v && v.length <= 100) || 'Subject must be less than 100 characters',
+      ],
+      bodyRules: [
+        v => !!v || 'Body is required',
+      ],
     }
   },
  
@@ -73,13 +97,6 @@ export default {
         this.tags = res.data.data;
       });
     },
-    switchTag(tagId) {
-      if (this.createForm.tags.includes(tagId)) {
-        this.createForm.tags = this.createForm.tags.filter(val => val !== tagId);
-      } else {
-        this.createForm.tags.push(tagId);
-      }
-    },
     getTagColorCode(tagId) {
       let tag = this.tags.find(tag => tag.id === tagId);
       return tag.color_code;
@@ -87,7 +104,22 @@ export default {
     getTagName(tagId) {
       let tag = this.tags.find(tag => tag.id === tagId);
       return tag.name;
-    }
+    },
+
+    create () {
+      if (this.$refs.form.validate()) {
+        let selectedTags = [];
+        this.comboboxTags.forEach(name => {
+          selectedTags.push(this.tags.find(tag => tag.name === name));
+        });
+        this.createForm.tags = selectedTags.map(tag => tag.id);
+        this.submit();
+      }
+    },
+    remove (item) {
+      this.createForm.tags.splice(this.createForm.tags.indexOf(item), 1)
+      this.createForm.tags = [...this.createForm.tags]
+    },
   },
 
   mounted() {
