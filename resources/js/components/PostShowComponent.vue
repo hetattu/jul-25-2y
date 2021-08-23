@@ -18,74 +18,101 @@
         </div>
       </div>
       <div class="col-md-8">
-        <transition-group name="list">
-          <span v-for="tagId in post.tags" :key="'tag' + tagId" :style="{backgroundColor: getTagColorCode(tagId)}">{{ getTagName(tagId) }}</span>
-        </transition-group>
-        <div class="card">
-          <div v-if="!post.subjectEditable" class="card-header">
-            <div>{{ post.subject }}</div>
-            <button class="btn btn-success" @click="editSubject()">Edit</button>
-          </div>
-          <div v-else class="card-header">
 
-            <form-input
-              v-model="post.subject"
-              :maxlength="100"
-              :iclass="'col-sm-9 form-control'"
-              :title="'subject'"
-            />
-            {{ post.subject.length }}
-
-            <button class="btn btn-success" @click.prevent="updatePost()">Update</button>
-            <button class="btn btn-danger" @click="cancelEditSubject()">Cancel</button>
-          </div>
-          <div v-if="!post.bodyEditable" class="card-body">
-            <div>{{ post.body }}</div>
-            <button class="btn btn-success" @click="editBody()">Edit</button>
-          </div>
-          <div v-else class="card-body">
-
-            <form-input
-              v-model="post.body"
-              :iclass="'col-sm-9 form-control'"
-              :title="'body'"
-            />
-
-            <button class="btn btn-success" @click.prevent="updatePost()">Update</button>
-            <button class="btn btn-primary" @click="cancelEditBody()">Cancel</button>
-          </div>
-        </div>
-        <button class="btn btn-danger" @click.prevent="deletePost()">Delete</button>
-        <form @submit.prevent="addComment">
-          <div class="card">
-            <div class="card-header">
-
-              <form-input
-                v-model="commentAdd"
-                :iclass="'col-sm-9 form-control'"
-              />
-
-              <button type="submit" class="btn btn-success">Add</button>
+        <v-card
+          class="mx-auto mb-4"
+        >
+          <v-card-title>
+            <div v-if="post.subjectEditable">
+              <v-text-field
+                v-model="post.subject"
+                :counter="50"
+                :rules="subjectRules"
+                label="Subject"
+                required
+                @keyup.enter="updatePost()"
+                @blur="updatePost()"
+              ></v-text-field>
             </div>
-          </div>
-        </form>
-        <div class="card" v-for="comment in comments" :key="comment.id">
-          <div v-if="!comment.editable" class="card-body">
-            <div>{{ comment.body }}</div>
-            <button class="btn btn-success" @click="editComment(comment.id)">Edit</button>
-            <button class="btn btn-danger" @click.prevent="deleteComment(comment.id)">Delete</button>
-          </div>
-          <div v-else class="card-body">
+            <div v-else @click="editSubject()" class="mb-2">
+              {{ post.subject }}
+            </div>
+          </v-card-title>
 
-            <form-input
-              v-model="comment.body"
-              :iclass="'col-sm-9 form-control'"
-            />
+          <v-card-text>
+            <v-chip
+              v-for="tagId in post.tags"
+              :key="'tag' + tagId"
+              class="mr-2"
+              :style="{'background-color': getTagColorCode(tagId)}"
+            >
+            {{ getTagName(tagId) }}
+            </v-chip>
+          </v-card-text>
 
-            <button class="btn btn-primary" @click.prevent="updateComment(comment.id)">Update</button>
-            <button class="btn btn-danger" @click="cancelEditComment(comment.id)">Cancel</button>
-          </div>
-        </div>
+          <v-divider></v-divider>
+
+          <v-card-text>
+            <div v-if="post.bodyEditable">
+              <v-textarea
+                v-model="post.body"
+                :rules="bodyRules"
+                label="Body"
+                rows="3"
+                required
+                @keyup.enter="updatePost()"
+                @blur="updatePost()"
+              >
+              </v-textarea>
+            </div>
+            <div v-else @click="editBody()">
+              {{ post.body }}
+            </div>
+          </v-card-text>
+        </v-card>
+
+        <v-card
+          class="mb-2"
+          outlined
+        >
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+            class="pa-2"
+          >
+            <v-textarea
+              v-model="commentAdd"
+              :rules="commentRules"
+              label="Comment"
+              rows="1"
+              required
+            ></v-textarea>
+
+            <v-btn
+              :disabled="!valid"
+              color="success"
+              class="mt-4"
+              @click="addComment()"
+            >
+              Send
+            </v-btn>
+          </v-form>
+        </v-card>
+
+        <v-card
+          v-for="comment in comments"
+          :key="comment.id"
+          class="mb-2"
+          outlined
+        >
+          <v-card-text>
+            <v-icon @click="deleteComment(comment.id)">
+              mdi-delete
+            </v-icon>
+            {{ comment.body }}
+          </v-card-text>
+        </v-card>
       </div>
     </div>
   </div>
@@ -101,7 +128,18 @@ export default {
       post: {},
       comments: {},
       tags: {},
-      commentAdd: ''
+      commentAdd: '',
+
+      valid: true,
+      subjectRules: [
+        v => !!v || 'Subject is required',
+      ],
+      bodyRules: [
+        v => !!v || 'Body is required',
+      ],
+      commentRules: [
+        v => !!v || 'Comment is required',
+      ],
     }
   },
   methods: {
@@ -138,31 +176,29 @@ export default {
       }
     },
     updatePost() {
+      if (this.post.subject === this.post.subjectBefore) {
+        this.post.subject = this.post.subjectBefore;
+        this.post.subjectEditable = false;
+        return;
+      }
+      if (this.post.body === this.post.bodyBefore) {
+        this.post.body = this.post.bodyBefore;
+        this.post.bodyEditable = false;
+        return;
+      }
+
       axios.put('/api/posts/' + this.postId, this.post).then((res) => {
         this.post.subjectEditable = false;
         this.post.bodyEditable = false;
-      });
-    },
-    deletePost() {
-      axios.delete('/api/posts/' + this.postId).then((res) => {
-        this.$router.push({name: 'post.list'});
       });
     },
     editSubject() {
       this.post.subjectBefore = this.post.subject;
       this.post.subjectEditable = true;
     },
-    cancelEditSubject() {
-      this.post.subject = this.post.subjectBefore;
-      this.post.subjectEditable = false;
-    },
     editBody() {
       this.post.bodyBefore = this.post.body;
       this.post.bodyEditable = true;
-    },
-    cancelEditBody() {
-      this.post.body = this.post.bodyBefore;
-      this.post.bodyEditable = false;
     },
     addComment() {
       if (!this.commentAdd) {
@@ -183,22 +219,6 @@ export default {
       axios.delete('/api/comments/' + commentId).then((res) => {
         this.comments = this.comments.filter((cmt) => cmt.id !== commentId);
       });
-    },
-    editComment(commentId) {
-      let comment = this.comments.find((cmt) => cmt.id === commentId);
-      comment.bodyBefore = comment.body;
-      comment.editable = true;
-    },
-    updateComment(commentId) {
-      let comment = this.comments.find((cmt) => cmt.id === commentId);
-      axios.put('/api/comments/' + commentId, comment).then((res) => {
-        comment.editable = false;
-      });
-    },
-    cancelEditComment(commentId) {
-      let comment = this.comments.find((cmt) => cmt.id === commentId);
-      comment.body = comment.bodyBefore;
-      comment.editable = false;
     },
     switchTag(tagId) {
       if (this.post.tags.includes(tagId)) {
